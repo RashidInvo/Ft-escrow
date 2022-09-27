@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, CloseAccount, Mint, SetAuthority, TokenAccount, Transfer};
 use spl_token::instruction::AuthorityType;
 
-declare_id!("6m7hFFRbDoCAN5bTm592crzaXNV3qkYwt6aaEzd1rkg6");
+declare_id!("3q6Sc7N5Z4UQQWa1TEgncVvabF9dBc4ubCJjBxRC4Cqm");
 
 #[program]
 pub mod anchor_escrow {

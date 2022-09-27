@@ -5,10 +5,12 @@ import { AnchorEscrow } from '../target/types/anchor_escrow';
 import { PublicKey, SystemProgram, Transaction, Connection, Commitment } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, Token } from "@solana/spl-token";
 import { assert } from "chai";
+// import assert from "assert";
+
 
 describe('anchor-escrow', () => {
   const commitment: Commitment = 'processed';
-  const connection = new Connection('https://rpc-mainnet-fork.dappio.xyz', { commitment, wsEndpoint: 'wss://rpc-mainnet-fork.dappio.xyz/ws' });
+  const connection = new Connection('https://api.devnet.solana.com', { commitment, wsEndpoint: '' });
   const options = anchor.Provider.defaultOptions();
   const wallet = NodeWallet.local();
   const provider = new anchor.Provider(connection, wallet, options);
@@ -42,6 +44,9 @@ describe('anchor-escrow', () => {
       await provider.connection.requestAirdrop(payer.publicKey, 1000000000),
       "processed"
     );
+
+
+  
 
     // Fund Main Accounts
     await provider.send(
@@ -123,7 +128,7 @@ describe('anchor-escrow', () => {
     );
     vault_authority_pda = _vault_authority_pda;
 
-    await program.rpc.initialize(
+    const tx_initialize= await program.rpc.initialize(
       vault_account_bump,
       new anchor.BN(initializerAmount),
       new anchor.BN(takerAmount),
@@ -145,6 +150,8 @@ describe('anchor-escrow', () => {
         signers: [escrowAccount, initializerMainAccount],
       }
     );
+
+    console.log(tx_initialize,"tx_initialize");
 
     let _vault = await mintA.getAccountInfo(vault_account_pda);
 
@@ -168,7 +175,7 @@ describe('anchor-escrow', () => {
   });
 
   it("Exchange escrow state", async () => {
-    await program.rpc.exchange({
+    const tx_exchange= await program.rpc.exchange({
       accounts: {
         taker: takerMainAccount.publicKey,
         takerDepositTokenAccount: takerTokenAccountB,
@@ -183,6 +190,8 @@ describe('anchor-escrow', () => {
       },
       signers: [takerMainAccount]
     });
+
+      console.log(tx_exchange,"tx_exchange");
 
     let _takerTokenAccountA = await mintA.getAccountInfo(takerTokenAccountA);
     let _takerTokenAccountB = await mintB.getAccountInfo(takerTokenAccountB);
@@ -204,7 +213,7 @@ describe('anchor-escrow', () => {
       initializerAmount
     );
 
-    await program.rpc.initialize(
+  const initialize_tx2 =  await program.rpc.initialize(
       vault_account_bump,
       new anchor.BN(initializerAmount),
       new anchor.BN(takerAmount),
@@ -227,8 +236,10 @@ describe('anchor-escrow', () => {
       }
     );
 
+    console.log(initialize_tx2,"initialize_tx2");
+
     // Cancel the escrow.
-    await program.rpc.cancel({
+   const cancel_tx = await program.rpc.cancel({
       accounts: {
         initializer: initializerMainAccount.publicKey,
         initializerDepositTokenAccount: initializerTokenAccountA,
@@ -240,11 +251,35 @@ describe('anchor-escrow', () => {
       signers: [initializerMainAccount]
     });
 
+    console.log(cancel_tx,"cancel_tx");
+
     // Check the final owner should be the provider public key.
     const _initializerTokenAccountA = await mintA.getAccountInfo(initializerTokenAccountA);
     assert.ok(_initializerTokenAccountA.owner.equals(initializerMainAccount.publicKey));
 
     // Check all the funds are still there.
     assert.ok(_initializerTokenAccountA.amount.toNumber() == initializerAmount);
+
+
+    // console.log(mintA.publicKey.toBase58(),"mintA");
+    // console.log(mintB.publicKey.toBase58(),"mintB");
+    // console.log(initializerTokenAccountA.toBase58(),"initializerTokenAccountA");
+    // console.log(initializerTokenAccountB.toBase58(),"initializerTokenAccountB");
+    // console.log(takerTokenAccountA.toBase58(),"takerTokenAccountA");
+    // console.log(takerTokenAccountB.toBase58(),"takerTokenAccountB");
+    // console.log(vault_account_pda.toBase58(),"vault_account_pda");
+    // console.log(vault_authority_pda.toBase58(),"vault_authority_pda");
+  
+  
+    // console.log(escrowAccount.publicKey.toBase58(),"escrowAccount");
+    // console.log(payer.publicKey.toBase58(),"payer");
+    // console.log(mintAuthority.publicKey.toBase58(),"mintAuthority");
+    // console.log(initializerMainAccount.publicKey.toBase58(),"initializerMainAccount");
+    // console.log(takerMainAccount.publicKey.toBase58(),"takerMainAccount");
+
+    
   });
+
+
+ 
 });
