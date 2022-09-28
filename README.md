@@ -2,19 +2,19 @@
 
 ## Overview
 
-Instead of letting initializer create a token account to be reset to a PDA authority, we create a token account `Vault` that has both a PDA key and a PDA authority.
+Instead of letting initializer create a token account to be reset to a PDA authority, we create a token account Vault that has both a PDA key and a PDA authority.
 
 ### Initialize
 
-`Initializer` can send a transaction to the escrow program to initialize the Vault. In this transaction, two new accounts: `Vault` and `EscrowAccount`, will be created and tokens (Token A) to be exchanged will be transfered from `Initializer` to `Vault`.
+Initializer can send a transaction to the escrow program to initialize the Vault. In this transaction, two new accounts: Vault and EscrowAccount, will be created and tokens (Token A) to be exchanged will be transfered from Initializer to Vault.
 
 ### Cancel
 
-`Initializer` can also send a transaction to the escrow program to cancel the demand of escrow. The tokens will be transfered back to the `Initialzer` and both `Vault` and `EscrowAccount` will be closed in this case.
+Initializer can also send a transaction to the escrow program to cancel the demand of escrow. The tokens will be transfered back to the Initialzer and both Vault and EscrowAccount will be closed in this case.
 
 ### Exchange
 
-`Taker` can send a transaction to the escrow to exchange Token B for Token A. First, tokens (Token B) will be transfered from `Taker` to `Initializer`. Afterward, the tokens (Token A) kept in the Vault will be transfered to `Taker`. Finally, both `Vault` and `EscrowAccount` will be closed.
+Taker can send a transaction to the escrow to exchange Token B for Token A. First, tokens (Token B) will be transfered from Taker to Initializer. Afterward, the tokens (Token A) kept in the Vault will be transfered to Taker. Finally, both Vault and EscrowAccount will be closed.
 
 ## Build, Deploy and Test
 
